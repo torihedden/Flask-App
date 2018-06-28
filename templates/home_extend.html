@@ -1,0 +1,14 @@
+<!-- child template -->
+
+{% extends "main.html" %}
+
+<h1>{% block title %}Home{% endblock %}</h1>
+
+{% block content %}
+<div class="">
+  <a href="/about">About</a>
+</div>
+<div class="">
+  <a href="http://torihedden.com" target="_blank">Portfolio</a>
+</div>
+{% endblock %}
