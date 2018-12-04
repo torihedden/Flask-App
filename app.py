@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, abort, render_template, make_response, request
+from flask_httpauth import HTTPBasicAuth
+auth = HTTPBasicAuth()
 
 from books import books
+from credentials import USERNAME, PASSWORD
 
 app = Flask(__name__)
 
@@ -23,10 +26,12 @@ def portfolio():
 
 
 @app.route('/api/books', methods=['GET'])
+@auth.login_required
 def get_books():
 		return jsonify({'books': books})
 
 @app.route('/api/books/<int:id>', methods=['GET'])
+@auth.login_required
 def get_book(id):
 		book = [book for book in books if book['id'] == id]
 		if len(book) == 0:
@@ -71,6 +76,16 @@ def delete_book(id):
 @app.errorhandler(404)
 def page_not_found(err):
 		return render_template('404.html'), 404
+
+@auth.get_password
+def get_password(username):
+		if username == USERNAME:
+			return PASSWORD
+		return None
+
+@auth.error_handler
+def unauthorized():
+	return make_response(jsonify({'error': 'Unauthorized access'}), 403)
 
 if __name__ == '__main__':
 	app.run(debug=True)
